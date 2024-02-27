@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação Diagnóstica</title>
+</head>
+
+<body>
+    <form id="formUser">
+        <label for="name">Digite seu nome:</label>
+        <input type="text" name="name" id="name"><br>
+        <label for="email">Insira seu e-mail:</label>
+        <input type="email" name="email" id="email"><br>
+        <input type="submit" value="enviar">
+    </form>
+
+    <table id="user">
+        <thead>
+            <tr>
+                <th> ID </th>
+                <th> Nome </th>
+                <th> E-mail </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.querySelector("#formUser");
+            console.log(form);
+            console.log("ok");
+            form.addEventListener("submit", async (event) => {
+
+                event.preventDefault();
+                const formData = new FormData(form);
+                const data = { name: formData.get("name"), email: formData.get("email")}
+                if (form.checkValidity()) {
+                    try {
+                        const response = await axios.post(
+                            "http://localhost:4000/user/cadastrar",
+                            data);
+                        console.log(response.data);
+                        form.reset();
+                        alert(`Usuário cadastrada com sucesso!`)
+                    } catch (error) {
+                        console.log(error.message);
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const tbody = document.querySelector('#user tbody');
+
+                const response = await axios.get('http://localhost:4000/user/listar');
+                response.data.forEach(user => {
+                    const tr = document.createElement('tr');
+
+                    const idTd = document.createElement('td');
+                    idTd.textContent = user.id;
+                    tr.appendChild(idTd);
+
+                    const nameTd = document.createElement('td');
+                    nameTd.textContent = user.name;
+                    tr.appendChild(nameTd);
+
+                    const emailTd = document.createElement('td');
+                    emailTd.textContent = user.email;
+                    tr.appendChild(emailTd);
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error(error);
+                // alert(error.response.data.mensagem);
+            }
+        });
+
+    </script>
+</body>
+
+</html>
